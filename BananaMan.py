@@ -23,11 +23,15 @@ from random import randint
 
 print("BANANAMAN!!!!!!!!!!!!")
 
+
 pygame.init()
 screen = pygame.display.set_mode((1080, 800))
 COLOR_INACTIVE = pygame.Color((200,200,200))
 COLOR_ACTIVE = pygame.Color((255,255,255))
+COLOR_UNFOUND = (0,0,250)
+COLOR_FOUND = (0,255,255)
 FONT = pygame.font.Font(None, 64)
+
 
 
 class InputBox:
@@ -38,34 +42,26 @@ class InputBox:
         self.text = text
         self.txt_surface = FONT.render(text, True, self.text_color)
         self.active = False
+        self.submitted_text = ''
     def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            # If the user clicked on the input_box rect.
-            if self.rect.collidepoint(event.pos):
-                # Toggle the active variable.
-                self.active = not self.active
+        if event.key == pygame.K_RETURN:
+            print(f'---> self.text: {self.text}')
+            self.submitted_text = self.text
+            # check_letter(self.text)
+            self.text = ''
+        elif event.key == pygame.K_BACKSPACE:
+            self.text = self.text[:-1]
+        else:
+            e_key = event.key
+            print(f'>>>>>>>>> e_key: {e_key}')
+            if e_key in range(pygame.K_a, pygame.K_z + 1):
+                self.text = event.unicode.upper()
             else:
-                self.active = False
-            # Change the current color of the input box.
-            self.color = COLOR_ACTIVE if self.active else COLOR_INACTIVE
-        if event.type == pygame.KEYDOWN:
-            # if self.active:
-            if event.key == pygame.K_RETURN:
-                print(self.text)
-                self.text = ''
-            elif event.key == pygame.K_BACKSPACE:
-                self.text = self.text[:-1]
-            else:
-                e_key = event.key
-                print(f'>>>>>>>>> e_key: {e_key}')
-                if e_key in range(pygame.K_a, pygame.K_z + 1):
-                    self.text = event.unicode.upper()
-                else:
-                    print(f'NOT IN ALPHA')
-                # self.text = event.unicode.upper()
-                print(f'self.text: {self.text}, {event.unicode}, {e_key}')
-            # Re-render the text.
-            self.txt_surface = FONT.render(self.text, True, self.text_color)
+                print(f'NOT IN ALPHA')
+            # self.text = event.unicode.upper()
+            print(f'self.text: {self.text}, key pressed: {event.unicode}, key value: {e_key}')
+        # Re-render the text.
+        self.txt_surface = FONT.render(self.text, True, self.text_color)
     def update(self):
         # Resize the box if the text is too long.
         width = max(10, self.txt_surface.get_width())
@@ -78,29 +74,83 @@ class InputBox:
         # Blit the text.
         screen.blit(self.txt_surface, (self.rect.x, self.rect.y))
 
+class LetterSpace:
+    def __init__(self, x, y, w, h, text=''):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.isfound = False
+        self.text = text
+        self.color = COLOR_UNFOUND
+        self.text_color = (0,0,0)
+        self.txt_surface = FONT.render(text, True, self.text_color)
+    def found(self):
+        self.isfound = True
+        print(f'in found self.isfound: {self.isfound}')
+        self.update()
+    def update(self):
+        print(f'updating.... {self.isfound}')
+        if self.isfound:
+            self.color = COLOR_FOUND
+        
+    def draw(self, screen):
+        pygame.draw.rect(screen, self.color, self.rect)
+        screen.blit(self.txt_surface, (self.rect.x, self.rect.y))
+
+def check_letter(letter, WORD):
+    find_index = WORD.find(letter)
+    if find_index == -1:
+        print(f'not found')
+    else:
+        print(f'letter found: {letter}, {find_index}, WORD.index: {WORD[find_index]}')
+
+
 def main():
     clock = pygame.time.Clock()
-    input_box1 = InputBox((screen.get_width()/2), (screen.get_height()/2), 20, 20)
-    input_boxes = [input_box1]
+    input_box1 = InputBox((screen.get_width()/2), (screen.get_height()/2), 1, 1)
+
+    WORD = "This is a TEST"
+    WORD = WORD.upper()
+
+    # make letter spaces
+    letter_spaces = []
+    word_length = len(WORD)
+
+    for i in range(word_length):
+        print(f'test: {i}, {WORD[i]} ++++++++> input box: {input_box1.text}')
+        letter_space = LetterSpace(((i*50)+100), 100, 40, 40, WORD[i])
+        letter_spaces.append(letter_space)
+
+    # input_boxes = [input_box1]
     done = False
 
     while not done:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
-            for box in input_boxes:
-                box.handle_event(event)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                done = True
+            if event.type == pygame.KEYDOWN:
+                print(f'>>> input_box1.submitted_text: |{input_box1.submitted_text}|')
+                input_box1.handle_event(event)
+                if input_box1.submitted_text != '':
+                    print(f'<<<< input box has value: |{input_box1.submitted_text}|')
+                    for i in range(word_length):
+                        if letter_spaces[i].text == input_box1.submitted_text:
+                            letter_spaces[i].found()
+                            print(f'{i}: letter_spaces[i]: {letter_spaces[i].text}, color: {letter_spaces[i].color}, found: {letter_spaces[i].isfound}')
+                            print('GARUNGA!!!')
+                # print(f'input_box1.submitted_text: {input_box1.submitted_text}')
 
             # if event.type == pygame.VIDEORESIZE:
             #     # There's some code to add back window content here.
             #     surface = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
         screen.fill((0, 0, 250))
 
-        for box in input_boxes:
-            box.update()
-
-        for box in input_boxes:
-            box.draw(screen)
+        input_box1.update()
+        # for letter in letter_spaces:
+        #     letter.update()
+        input_box1.draw(screen)
+        for letter in letter_spaces:
+            letter.draw(screen)
 
         pygame.display.flip()
         clock.tick(30)
