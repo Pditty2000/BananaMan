@@ -20,17 +20,7 @@
 import pygame
 import sys
 from random import randint
-
-pygame.init()
-screen = pygame.display.set_mode((1080, 800))
-screen_width = screen.get_width()
-screen_height = screen.get_height()
-BACKGROUND_COLOR = (0,0,200)
-COLOR_UNFOUND = (0,0,0)
-COLOR_FOUND = (0,255,255)
-FONT = pygame.font.Font(None, 64)
-smallFONT = pygame.font.Font(None, 32)
-FOUND_COUNT = 0
+import landingPage
 
 
 
@@ -109,7 +99,6 @@ class GuessCount:
 
 
 def main():
-    clock = pygame.time.Clock()
     input_box1 = InputBox((screen.get_width()/2), (screen.get_height()/2), 1, 1)
 
     # make phrase
@@ -163,10 +152,42 @@ def main():
 
         pygame.display.flip()
         clock.tick(30)
+        print(f'Clock: {clock}')
 
 
 if __name__ == '__main__':
-    main()
-    pygame.quit()     
+    pygame.display.set_caption("BananaMan!")
+
+    # pygame setup
+    pygame.init()
+    clock = pygame.time.Clock()
+    screen = pygame.display.set_mode((1080, 800))
+    screen_width = screen.get_width()
+    screen_height = screen.get_height()
+    BACKGROUND_COLOR = (0,0,200)
+    COLOR_UNFOUND = (0,0,0)
+    COLOR_FOUND = (0,255,255)
+    FONT = pygame.font.Font(None, 64)
+    smallFONT = pygame.font.Font(None, 32)
+    
+    testcount =  0
+    
+    running = True
+    while running:
+        # built in self destruct button
+        if testcount > 10000:
+            print( f'Hit the loop limit: testcount = {testcount}')
+            running = False
+        testcount+=1
+        
+        # show landing page before starting game
+        landingPage.splashscreen(screen)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                running = False
+            else:
+                if event.type == pygame.KEYDOWN and (event.key == pygame.K_SPACE):
+                    main()  
 
 print('<<<<<<<<<<<<<<<<<<<< END >>>>>>>>>>>>>>>>>>>>>')
