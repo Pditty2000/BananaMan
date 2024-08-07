@@ -90,6 +90,23 @@ class StatBox:
         screen.blit(self.correct_text, (self.rect.x+10, self.rect.y+(self.rect.h/3)))
         screen.blit(self.remain_text, (self.rect.x+10, self.rect.y+(2*(self.rect.h/3))))
 
+def submitInput(input, phrase_length, letter_spaces):
+    count = remaining = 0
+    success = False
+    for i in range(phrase_length):
+        if letter_spaces[i].text == input:
+            letter_spaces[i].found()
+            success = True
+        if letter_spaces[i].isfound:
+            count+=1
+        else:
+            if letter_spaces[i].text != ' ':
+                remaining+=1
+    if not success:
+        print('showing error')
+        landingPage.error(screen)
+    print(f'----> Success: {success}')
+    return (count, remaining)
 
 def main():
     clock = pygame.time.Clock()
@@ -125,19 +142,11 @@ def main():
                     input1 = event.unicode.upper()
                 if e_key == pygame.K_RETURN and input1 != '':
                     guess_count.count += 1
+                    guess = submitInput(input1, phrase_length, letter_spaces)
                     submitted_input = input1
-                    count = remaining = 0
-                    for i in range(phrase_length):
-                        if letter_spaces[i].text == submitted_input:
-                            letter_spaces[i].found()
-                        if letter_spaces[i].isfound:
-                            count+=1
-                        else:
-                            if letter_spaces[i].text != ' ':
-                                remaining+=1
-                    print(f'count: {count}, remaining: {remaining}')
-                    guess_count.correct = count
-                    guess_count.remaining = remaining
+                    print(f'count: {guess[0]}, remaining: {guess[1]}')
+                    guess_count.correct = guess[0]
+                    guess_count.remaining = guess[1]
                     input1 = ''
 
         input_letter = FONT.render(input1, True, (0,0,0))
@@ -148,8 +157,6 @@ def main():
             #     # There's some code to add back window content here.
             #     surface = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
 
-        # get correct/missed stats
-        print(f'guess_count.remaining: {guess_count.remaining}')
 
     # start the displaying   
         # fill background color
@@ -169,7 +176,6 @@ def main():
 
         pygame.display.flip()
         clock.tick(30)
-        print(f'Clock: {clock}')
 
 if __name__ == '__main__':
     pygame.display.set_caption("BananaMan!")
