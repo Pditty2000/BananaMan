@@ -20,11 +20,9 @@
 import pygame
 import sys
 from random import randint
+import landingPage
 
 pygame.init()
-screen = pygame.display.set_mode((1080, 800))
-screen_width = screen.get_width()
-screen_height = screen.get_height()
 BACKGROUND_COLOR = (0,0,200)
 COLOR_UNFOUND = (0,0,0)
 COLOR_FOUND = (0,255,255)
@@ -142,8 +140,8 @@ def main():
                     guess_count.remaining = remaining
                     input1 = ''
 
-            input_letter = FONT.render(input1, True, (0,0,0))
-            submitted_letter = FONT.render(submitted_input, True, ((255,0,0)))
+        input_letter = FONT.render(input1, True, (0,0,0))
+        submitted_letter = FONT.render(submitted_input, True, ((255,0,0)))
             
             # # if I need to make it resizeable
             # if event.type == pygame.VIDEORESIZE:
@@ -175,6 +173,9 @@ def main():
 
 if __name__ == '__main__':
     pygame.display.set_caption("BananaMan!")
+    screen = pygame.display.set_mode((1080, 800))
+    screen_width = screen.get_width()
+    screen_height = screen.get_height()
 
     # pygame setup
     pygame.init()
@@ -201,6 +202,7 @@ if __name__ == '__main__':
         # show landing page before starting game
         landingPage.splashscreen(screen)
 
+        print(f'...Press space to start main()')
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 running = False
