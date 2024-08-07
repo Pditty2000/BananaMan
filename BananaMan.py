@@ -186,25 +186,21 @@ if __name__ == '__main__':
     FONT = pygame.font.Font(None, 64)
     smallFONT = pygame.font.Font(None, 32)
     
-    testcount =  0
+    the_count =  0
     
     running = True
-    while running:
-        # built in self destruct button
-        if testcount > 10000:
-            print( f'Hit the loop limit: testcount = {testcount}')
-            running = False
-        testcount+=1
-        
+    while running:   
+        the_count += 1     
         # show landing page before starting game
         landingPage.splashscreen(screen)
-
-        print(f'...Press space to start main()')
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 running = False
             else:
-                if event.type == pygame.KEYDOWN and (event.key == pygame.K_SPACE):
-                    main()  
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        main()
+                    else:
+                        landingPage.error(screen)
 
-print('<<<<<<<<<<<<<<<<<<<< END >>>>>>>>>>>>>>>>>>>>>')
+print(f'<<<<<<<<<<<<<<<<<<<< END >>>>>>>>>>>>>>>>>>>>>{the_count}')
