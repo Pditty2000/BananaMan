@@ -11,7 +11,6 @@ TITLE_FONT = pygame.font.Font(None, 64)
 INSTRUCTION_TEXT = 'Press SPACE to begin...'
 INSTRUCTION_FONT = pygame.font.Font(None, 32)
 
-
 splash_image = pygame.image.load(BACKGROUND_IMAGE)
 splash_image = pygame.transform.scale(splash_image, (1080, 606))
 error_image = pygame.image.load(ERROR_IMAGE)
@@ -42,5 +41,5 @@ def error(screen):
     timer = 50
     while timer > 0:
         errorscreen(screen)
-        print(f'errorscreen: {timer}')
         timer -= 1
+    

@@ -77,18 +77,21 @@ class StatBox:
         self.count = 0
         self.remaining = 0
         self.correct = 0
+        self.errors = 0
         self.color = (150,150,150)
         self.rect = pygame.Rect(x, y, w, h)
         self.text_color = (0,0,0)
     def update(self):
         self.count_text = smallFONT.render(f'Total Guesses: {self.count}', True, self.text_color)
         self.correct_text = smallFONT.render(f'{self.correct} correct', True, self.text_color)
+        self.error_text = smallFONT.render(f'{self.errors} errors', True, self.text_color)
         self.remain_text = smallFONT.render(f'{self.remaining} remaining', True, self.text_color)
     def draw(self, screen):
         pygame.draw.rect(screen, self.color, self.rect)
         screen.blit(self.count_text, (self.rect.x+10, (screen_height-self.rect.h+5)))
-        screen.blit(self.correct_text, (self.rect.x+10, self.rect.y+(self.rect.h/3)))
-        screen.blit(self.remain_text, (self.rect.x+10, self.rect.y+(2*(self.rect.h/3))))
+        screen.blit(self.correct_text, (self.rect.x+10, self.rect.y+(self.rect.h/4)))
+        screen.blit(self.error_text, (self.rect.x+10, self.rect.y+(2*(self.rect.h/4))))
+        screen.blit(self.remain_text, (self.rect.x+10, self.rect.y+(3*(self.rect.h/4))))
 
 def submitInput(input, phrase_length, letter_spaces):
     count = remaining = 0
@@ -102,11 +105,7 @@ def submitInput(input, phrase_length, letter_spaces):
         else:
             if letter_spaces[i].text != ' ':
                 remaining+=1
-    if not success:
-        print('showing error')
-        landingPage.error(screen)
-    print(f'----> Success: {success}')
-    return (count, remaining)
+    return (count, remaining, success)
 
 def main():
     clock = pygame.time.Clock()
@@ -129,6 +128,7 @@ def main():
     # start playing
     input1 = ''
     submitted_input = ''
+    error_count = 0
     done = False
     while not done:
         for event in pygame.event.get():
@@ -145,8 +145,12 @@ def main():
                     guess = submitInput(input1, phrase_length, letter_spaces)
                     submitted_input = input1
                     print(f'count: {guess[0]}, remaining: {guess[1]}')
+                    if not guess[2]:
+                        landingPage.error(screen)
+                        error_count+=1
                     guess_count.correct = guess[0]
                     guess_count.remaining = guess[1]
+                    guess_count.errors = error_count
                     input1 = ''
 
         input_letter = FONT.render(input1, True, (0,0,0))
