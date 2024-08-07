@@ -173,14 +173,11 @@ def main():
 
 if __name__ == '__main__':
     pygame.display.set_caption("BananaMan!")
-    screen = pygame.display.set_mode((1080, 800))
-    screen_width = screen.get_width()
-    screen_height = screen.get_height()
 
     # pygame setup
     pygame.init()
     clock = pygame.time.Clock()
-    screen = pygame.display.set_mode((1080, 800))
+    screen = pygame.display.set_mode((1080, 606))
     screen_width = screen.get_width()
     screen_height = screen.get_height()
     BACKGROUND_COLOR = (0,0,200)
