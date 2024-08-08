@@ -43,3 +43,7 @@ def error(screen):
         errorscreen(screen)
         timer -= 1
     
+def word_ready(screen):
+    circle_radius = 50
+    pygame.draw.circle(screen, (0,255,0),(55, 55), 50)
+    pygame.display.flip()

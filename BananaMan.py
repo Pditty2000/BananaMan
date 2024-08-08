@@ -21,6 +21,7 @@ import pygame
 import sys
 from random import randint
 import landingPage
+import word
 
 pygame.init()
 BACKGROUND_COLOR = (0,0,200)
@@ -107,11 +108,11 @@ def submitInput(input, phrase_length, letter_spaces):
                 remaining+=1
     return (count, remaining, success)
 
-def main():
+def main(PHRASE):
     clock = pygame.time.Clock()
 
     # make phrase
-    PHRASE = "This is a TEST"
+    # PHRASE = "This is a TEST"
     PHRASE = PHRASE.upper()
 
     # make letter spaces
@@ -195,7 +196,7 @@ if __name__ == '__main__':
     COLOR_FOUND = (0,255,255)
     FONT = pygame.font.Font(None, 64)
     smallFONT = pygame.font.Font(None, 32)
-    
+    phrase = "This Is A Test"
     the_count =  0
     
     running = True
@@ -203,13 +204,17 @@ if __name__ == '__main__':
         the_count += 1     
         # show landing page before starting game
         landingPage.splashscreen(screen)
+        phrase = word.select_word()
+        print(f'++++++> phrase: {phrase}')
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 running = False
             else:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        main()
+                        main(phrase)
+                    # elif event.key == pygame.K_t:
+                    #     word.get_words()
                     else:
                         landingPage.error(screen)
 
