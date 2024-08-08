@@ -196,22 +196,24 @@ if __name__ == '__main__':
     COLOR_FOUND = (0,255,255)
     FONT = pygame.font.Font(None, 64)
     smallFONT = pygame.font.Font(None, 32)
-    phrase = "This Is A Test"
+    word_list = word.get_words()
     the_count =  0
     
+    phrase = "TEST"
+
     running = True
     while running:   
         the_count += 1     
         # show landing page before starting game
-        landingPage.splashscreen(screen)
-        phrase = word.select_word()
-        print(f'++++++> phrase: {phrase}')
+        landingPage.splashscreen(screen, word_list)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 running = False
             else:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
+                        print(f'====> main phrase: {phrase}')
                         main(phrase)
                     # elif event.key == pygame.K_t:
                     #     word.get_words()

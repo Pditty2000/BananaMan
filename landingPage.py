@@ -20,7 +20,12 @@ instructions = INSTRUCTION_FONT.render(INSTRUCTION_TEXT, True, TEXT_COLOR)
 title_rect = splash_title.get_rect()
 inst_rect = instructions.get_rect()
 
-def splashscreen(screen):
+def splashscreen(screen, word_list):
+    print(f'landing page word list: {word_list}')
+    bubble_list = []
+    for word in word_list:
+        bubble_list.append(word_bubble(word))
+    print(f'length of bubble list: {len(bubble_list)}')
     screen_rect = screen.get_rect()
     screen.blit(splash_image, (0, 0))
     screen.blit(splash_title, (screen_rect.centerx - (title_rect.width/2), screen_rect.centery))
@@ -45,5 +50,10 @@ def error(screen):
     
 def word_ready(screen):
     circle_radius = 50
-    pygame.draw.circle(screen, (0,255,0),(55, 55), 50)
+    pygame.draw.circle(screen, (0,255,0),(55, 55), circle_radius)
     pygame.display.flip()
+
+def word_bubble(word):
+    word_length = len(word)
+    word_image = pygame.font.Font(None, 32).render(word, True, TEXT_COLOR)
+    return word_image, word_length
