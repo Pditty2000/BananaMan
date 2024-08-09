@@ -199,13 +199,13 @@ if __name__ == '__main__':
     word_list = word.get_words()
     the_count =  0
     
-    phrase = "TEST"
+    # phrase = "TEST"
 
     running = True
     while running:   
         the_count += 1     
         # show landing page before starting game
-        landingPage.splashscreen(screen, word_list)
+        phrase = landingPage.splashscreen(screen, word_list)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
