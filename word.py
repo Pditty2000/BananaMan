@@ -4,11 +4,17 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 
+BACKGROUND_IMAGE = 'Images/Banana_yellow_background_474x266.png'
+splash_image = pygame.image.load(BACKGROUND_IMAGE)
+splash_image = pygame.transform.scale(splash_image, (1080, 606))
+
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 pygame.init()
 
-def get_words():
+def get_words(screen):
+    screen.blit(splash_image, (0,0))
+    pygame.display.flip()
     driver = webdriver.Chrome(options=chrome_options)
     driver.get("https://www.randomlists.com/random-words")
     driver.get_screenshot_as_file("screenshots/driver_screenshot.png") 

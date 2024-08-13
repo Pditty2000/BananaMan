@@ -1,26 +1,7 @@
-# Front end:
-# make screen/background
-# make letter selection grid
-#    make letter selected
-#    make letter used warning
-# make text input box
-# make submit button
-# make gallows
-# make character
-# make hidden letter display
-#    make found letter display
-# make success banner
-# Back end:
-# collect input from text box on submit or
-# collect input from letter grid on mouseclick
-#      verify if used already
-#           if not, make letter selected
-#           if so, send warning
-
 import pygame
 import sys
 from random import randint
-import landingPage
+import pregame
 import word
 
 pygame.init()
@@ -30,27 +11,6 @@ COLOR_FOUND = (0,255,255)
 FONT = pygame.font.Font(None, 64)
 smallFONT = pygame.font.Font(None, 32)
 FOUND_COUNT = 0
-
-
-# class InputBox:
-#     def __init__(self, x, y, w, h, text=''):
-#         self.rect = pygame.Rect(x, y, w, h)
-#         self.color = (200,200,200)
-#         self.text_color = (0,0,0)
-#         self.text = text
-#         self.txt_surface = FONT.render(self.text, True, self.text_color)
-#         self.submitted_text = ''
-#         # Re-render the text.
-#         self.txt_surface = FONT.render(self.text, True, self.text_color)
-#     def update(self):
-#         # Resize the box if the text is too long.
-#         width = max(10, self.txt_surface.get_width())
-#         height = max(10, self.txt_surface.get_height())
-#         self.rect.w = width
-#         self.rect.h = height
-#     def draw(self, screen):
-#         # pygame.draw.rect(screen, self.color, self.rect)
-#         screen.blit(self.txt_surface, (self.rect.x, self.rect.y))
 
 class LetterSpace:
     def __init__(self, x, y, w, h, text=''):
@@ -76,7 +36,7 @@ class LetterSpace:
 class StatBox:
     def __init__(self, x, y, w, h):
         self.count = 0
-        self.remaining = 0
+        self.remaining = 1
         self.correct = 0
         self.errors = 0
         self.color = (150,150,150)
@@ -108,6 +68,15 @@ def submitInput(input, phrase_length, letter_spaces):
                 remaining+=1
     return (count, remaining, success)
 
+def winner_banner(guess_count):
+    timer = 100
+    bg_banner = 'Images/Winner_banner_1080x675.png'
+    bg_image = pygame.image.load(bg_banner)
+    while timer > 0:
+        timer -=1
+        screen.blit(bg_image, (0,0))
+        pygame.display.flip()
+
 def main(PHRASE):
     clock = pygame.time.Clock()
 
@@ -122,9 +91,8 @@ def main(PHRASE):
         letter_space = LetterSpace(((i*50)+100), 100, 40, 40, PHRASE[i])
         letter_spaces.append(letter_space)
 
-    # make count area
+    # make stat box area
     guess_count = StatBox((screen_width-(screen_width/4)), (screen_height-160), (screen_width/4), 160)
-
 
     # start playing
     input1 = ''
@@ -147,12 +115,15 @@ def main(PHRASE):
                     submitted_input = input1
                     print(f'count: {guess[0]}, remaining: {guess[1]}')
                     if not guess[2]:
-                        landingPage.error(screen)
+                        pregame.error(screen)
                         error_count+=1
                     guess_count.correct = guess[0]
                     guess_count.remaining = guess[1]
                     guess_count.errors = error_count
                     input1 = ''
+                if guess_count.remaining <= 0:
+                    winner_banner(guess_count)
+                    done = True
 
         input_letter = FONT.render(input1, True, (0,0,0))
         submitted_letter = FONT.render(submitted_input, True, ((255,0,0)))
@@ -196,7 +167,7 @@ if __name__ == '__main__':
     COLOR_FOUND = (0,255,255)
     FONT = pygame.font.Font(None, 64)
     smallFONT = pygame.font.Font(None, 32)
-    word_list = word.get_words()
+    word_list = word.get_words(screen)
     the_count =  0
     
     # phrase = "TEST"
@@ -205,19 +176,44 @@ if __name__ == '__main__':
     while running:   
         the_count += 1     
         # show landing page before starting game
-        phrase = landingPage.splashscreen(screen, word_list)
+        phrase = pregame.splashscreen(screen, word_list)
+        word_index = randint(0, (len(word_list)-1))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 running = False
             else:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = pygame.mouse.get_pos()
+                    print(f'MOUSECLICK: {mouse_pos}')
+                    
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
+                        phrase = word_list[word_index]
                         print(f'====> main phrase: {phrase}')
                         main(phrase)
-                    # elif event.key == pygame.K_t:
-                    #     word.get_words()
                     else:
-                        landingPage.error(screen)
+                        pregame.error(screen)
 
 print(f'<<<<<<<<<<<<<<<<<<<< END >>>>>>>>>>>>>>>>>>>>>{the_count}')
+
+
+# class InputBox:
+#     def __init__(self, x, y, w, h, text=''):
+#         self.rect = pygame.Rect(x, y, w, h)
+#         self.color = (200,200,200)
+#         self.text_color = (0,0,0)
+#         self.text = text
+#         self.txt_surface = FONT.render(self.text, True, self.text_color)
+#         self.submitted_text = ''
+#         # Re-render the text.
+#         self.txt_surface = FONT.render(self.text, True, self.text_color)
+#     def update(self):
+#         # Resize the box if the text is too long.
+#         width = max(10, self.txt_surface.get_width())
+#         height = max(10, self.txt_surface.get_height())
+#         self.rect.w = width
+#         self.rect.h = height
+#     def draw(self, screen):
+#         # pygame.draw.rect(screen, self.color, self.rect)
+#         screen.blit(self.txt_surface, (self.rect.x, self.rect.y))
