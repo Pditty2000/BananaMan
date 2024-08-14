@@ -170,32 +170,17 @@ if __name__ == '__main__':
     word_list = word.get_words(screen)
     the_count =  0
     
-    # phrase = "TEST"
 
     running = True
     while running:   
         the_count += 1     
         # show landing page before starting game
         phrase = pregame.splashscreen(screen, word_list)
-        word_index = randint(0, (len(word_list)-1))
+        print(f'Ready to play?.....{phrase}')
+        
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-                running = False
-            else:
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_pos = pygame.mouse.get_pos()
-                    print(f'MOUSECLICK: {mouse_pos}')
-                    
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        phrase = word_list[word_index]
-                        print(f'====> main phrase: {phrase}')
-                        main(phrase)
-                    else:
-                        pregame.error(screen)
 
-print(f'<<<<<<<<<<<<<<<<<<<< END >>>>>>>>>>>>>>>>>>>>>{the_count}')
+print(f'<<<<<<<<<<<<<<<<<<<< END >>>>>>>>>>>>>>>>>>>>>')
 
 
 # class InputBox:
