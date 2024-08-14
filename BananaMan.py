@@ -5,12 +5,19 @@ import pregame
 import word
 
 pygame.init()
+SCREEN_SIZE = (1080, 606)
 BACKGROUND_COLOR = (0,0,200)
+BACKGROUND_IMAGE = 'Images/Banana_yellow_background_474x266.png'
 COLOR_UNFOUND = (0,0,0)
 COLOR_FOUND = (0,255,255)
 FONT = pygame.font.Font(None, 64)
 smallFONT = pygame.font.Font(None, 32)
 FOUND_COUNT = 0
+
+clock = pygame.time.Clock()
+screen = pygame.display.set_mode(SCREEN_SIZE)
+screen_width = screen.get_width()
+screen_height = screen.get_height()
 
 class LetterSpace:
     def __init__(self, x, y, w, h, text=''):
@@ -156,29 +163,39 @@ def main(PHRASE):
 if __name__ == '__main__':
     pygame.display.set_caption("BananaMan!")
 
-    # pygame setup
-    pygame.init()
-    clock = pygame.time.Clock()
-    screen = pygame.display.set_mode((1080, 606))
-    screen_width = screen.get_width()
-    screen_height = screen.get_height()
-    BACKGROUND_COLOR = (0,0,200)
-    COLOR_UNFOUND = (0,0,0)
-    COLOR_FOUND = (0,255,255)
-    FONT = pygame.font.Font(None, 64)
-    smallFONT = pygame.font.Font(None, 32)
-    word_list = word.get_words(screen)
-    the_count =  0
+    pregame.loadScreen(screen, BACKGROUND_IMAGE)
+    word_list = word.get_words()
+    word_index = randint(0, (len(word_list)-1))
     
-
+    the_count =  0
     running = True
     while running:   
-        the_count += 1     
-        # show landing page before starting game
-        phrase = pregame.splashscreen(screen, word_list)
-        print(f'Ready to play?.....{phrase}')
+        pregame.loadScreen(screen, BACKGROUND_IMAGE)
+
+        the_count += 1    
+        pregame.show_word_list(screen, word_list)
+        pygame.display.flip()
+ 
+        # phrase = pregame.splashscreen(screen, BACKGROUND_IMAGE, word_list)
         
 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                running = False
+            else:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = pygame.mouse.get_pos()
+                    print(f'MOUSECLICK: {mouse_pos}')
+                    word_index = randint(0, (len(word_list)-1))
+                print(f'--> Word index: {word_index}')
+                    
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        phrase = word_list[word_index]
+                        print(f'====> main phrase: {phrase}')
+                        main(phrase)
+                    else:
+                        pregame.error(screen)
 
 print(f'<<<<<<<<<<<<<<<<<<<< END >>>>>>>>>>>>>>>>>>>>>')
 

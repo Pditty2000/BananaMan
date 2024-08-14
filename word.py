@@ -12,8 +12,7 @@ chrome_options = Options()
 chrome_options.add_argument("--headless")
 pygame.init()
 
-def get_words(screen):
-    screen.blit(splash_image, (0,0))
+def get_words():
     pygame.display.flip()
     driver = webdriver.Chrome(options=chrome_options)
     driver.get("https://www.randomlists.com/random-words")
