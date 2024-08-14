@@ -170,10 +170,11 @@ if __name__ == '__main__':
     the_count =  0
     running = True
     while running:   
+        the_count += 1  
+        
         pregame.loadScreen(screen, BACKGROUND_IMAGE)
-
-        the_count += 1    
-        pregame.show_word_list(screen, word_list)
+  
+        word.show_word_list(screen, word_list)
         pygame.display.flip()
  
         # phrase = pregame.splashscreen(screen, BACKGROUND_IMAGE, word_list)
