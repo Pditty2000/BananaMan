@@ -166,28 +166,33 @@ if __name__ == '__main__':
     pregame.loadScreen(screen, BACKGROUND_IMAGE)
     word_list = word.get_words()
     word_index = randint(0, (len(word_list)-1))
+    wordBubbles = word.get_bubbles(word_list)
+    print(f'wordBubbles: {wordBubbles}')
     
     the_count =  0
     running = True
     while running:   
-        the_count += 1  
-        
-        pregame.loadScreen(screen, BACKGROUND_IMAGE)
-  
-        word.show_word_list(screen, word_list)
-        pygame.display.flip()
- 
-        # phrase = pregame.splashscreen(screen, BACKGROUND_IMAGE, word_list)
-        
+        the_count += 1    
 
+        pregame.loadScreen(screen, BACKGROUND_IMAGE)
+        word.show_word_list(screen, word_list)
+        word.show_word_bubbles(screen, wordBubbles)
+        pygame.display.flip()
+
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 running = False
             else:
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_pos = pygame.mouse.get_pos()
-                    print(f'MOUSECLICK: {mouse_pos}')
+                    mouse_pos = event.pos
+                    print(f'MOUSECLICK: {event.pos}')
+                    # in place before finish mouseclick and object
                     word_index = randint(0, (len(word_list)-1))
+
+                    # mouseclick and object
+                    # word_bubble.handle_event(event)
+
                 print(f'--> Word index: {word_index}')
                     
                 if event.type == pygame.KEYDOWN:
@@ -201,22 +206,3 @@ if __name__ == '__main__':
 print(f'<<<<<<<<<<<<<<<<<<<< END >>>>>>>>>>>>>>>>>>>>>{the_count}')
 
 
-# class InputBox:
-#     def __init__(self, x, y, w, h, text=''):
-#         self.rect = pygame.Rect(x, y, w, h)
-#         self.color = (200,200,200)
-#         self.text_color = (0,0,0)
-#         self.text = text
-#         self.txt_surface = FONT.render(self.text, True, self.text_color)
-#         self.submitted_text = ''
-#         # Re-render the text.
-#         self.txt_surface = FONT.render(self.text, True, self.text_color)
-#     def update(self):
-#         # Resize the box if the text is too long.
-#         width = max(10, self.txt_surface.get_width())
-#         height = max(10, self.txt_surface.get_height())
-#         self.rect.w = width
-#         self.rect.h = height
-#     def draw(self, screen):
-#         # pygame.draw.rect(screen, self.color, self.rect)
-#         screen.blit(self.txt_surface, (self.rect.x, self.rect.y))

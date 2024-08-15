@@ -1,13 +1,22 @@
 import pygame
-import random
 import word
+import random
 
 pygame.init()
 # BACKGROUND_IMAGE = 'Images/Banana_yellow_background_474x266.png'
 ERROR_IMAGE = 'Images/error.png'
-BACKGROUND_COLOR = (255,255,255)
+BACKGROUND_COLOR = (0,255,0)
+TEXT_COLOR = (0,0,0)
+TITLE_FONT = pygame.font.Font(None, 64)
+
+# splash_image = pygame.image.load(BACKGROUND_IMAGE)
+# splash_image = pygame.transform.scale(splash_image, (1080, 606))
+
 error_image = pygame.image.load(ERROR_IMAGE)
 error_image = pygame.transform.scale(error_image, (606, 606))
+# splash_title = TITLE_FONT.render(TITLE_TEXT, True, TEXT_COLOR)
+# title_rect = splash_title.get_rect()
+
 
 def errorscreen(screen):
     error_rect = error_image.get_rect()
@@ -24,12 +33,12 @@ def error(screen):
     while timer > 0:
         errorscreen(screen)
         timer -= 1
-    
+
 def loadScreen(screen, bg_image):
     screen_rect = screen.get_rect()
     splash_image = pygame.image.load(bg_image)
     splash_image = pygame.transform.scale(splash_image, (1080, 606))
-    splash_title = word.get_title_image()
-    title_rect = splash_title.get_rect()    
+    splash_title = word.get_title()
+    title_rect = splash_title.get_rect()
     screen.blit(splash_image, (0,0))
     screen.blit(splash_title, (screen_rect.centerx - (title_rect.width/2), screen_rect.centery))
