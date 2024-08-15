@@ -175,7 +175,7 @@ if __name__ == '__main__':
         the_count += 1    
 
         pregame.loadScreen(screen, BACKGROUND_IMAGE)
-        word.show_word_list(screen, word_list)
+        # word.show_word_list(screen, word_list)
         word.show_word_bubbles(screen, wordBubbles)
         pygame.display.flip()
 

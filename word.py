@@ -28,19 +28,21 @@ def get_words():
         word_list.append(word)
     return word_list
 
+# show bubble for each possible word... show number of letters for word
 def show_word_bubbles(screen, wordBubbles):
     screen_rect = screen.get_rect()
     list_length = len(wordBubbles)
-    test_rect = pygame.Rect(screen_rect.centerx-100, screen_rect.centery-250, 200, 100)
     print(f'======> show bubbles..')
-    pygame.draw.ellipse(screen, (0,0,255), test_rect)
     for i in range(list_length):
         bubble = wordBubbles[i]
-        bubble.rect.x = screen_rect.w-bubble.rect.w-10
-        bubble.rect.y = (i*(bubble.rect.h))+5
-        print(f'==> bubble.rect: {bubble.rect}')
+        word_length = str(len(bubble.text))
+        length_image = pygame.font.Font(None, 32).render(word_length, True, TEXT_COLOR)
+        bubble.rect.y = i*(bubble.rect.height+5)
+        # pygame.draw.ellipse(screen, (255,0,0), bubble.rect)
         bubble.draw(screen)
-
+        print(f'==> bubble.rect: {bubble.rect}, bubble.text length: {word_length}')
+        # bubble.draw(screen)
+    pygame.display.flip()
 
 # display word list on splash page
 def show_word_list(screen, word_list):
@@ -79,7 +81,7 @@ def get_bubbles(word_list):
 def bubble_word(word):
     wordImage = word_image(word)
     word_rect = wordImage.get_rect()
-    word_bubble = WordBubble(word_rect.x, word_rect.y, word_rect.w, word_rect.h)
+    word_bubble = WordBubble(word_rect.x, word_rect.y, word_rect.w, word_rect.h, word)
     return word_bubble
 
     
@@ -90,10 +92,13 @@ class WordBubble:
         self.color = (200,200,200)
         self.text_color = (0,0,0)
         self.text = text
+        self.text_length = str(len(self.text))
         self.txt_surface = pygame.font.Font(None, 64).render(self.text, True, self.text_color)
+        self.length_surface = pygame.font.Font(None, 64).render(self.text_length, True, self.text_color)
+        self.length_rect = self.length_surface.get_rect()
         self.submitted_text = ''
-        # Re-render the text.
-        self.txt_surface = pygame.font.Font(None, 64).render(self.text, True, self.text_color)
+        self.rect.width = self.txt_surface.get_width()
+        self.rect.height = self.txt_surface.get_height()
     def update(self):
         # Resize the box if the text is too long.
         width = max(10, self.txt_surface.get_width())
@@ -101,8 +106,10 @@ class WordBubble:
         self.rect.w = width
         self.rect.h = height
     def draw(self, screen):
-        # pygame.draw.rect(screen, self.color, self.rect)
-        screen.blit(self.txt_surface, (self.rect.x, self.rect.y))
+        pygame.draw.ellipse(screen, (0,0,255), self.rect)
+        screen.blit(self.length_surface, ((self.rect.centerx-(self.length_rect.w/2)), self.rect.y))
+
+
 
 
 
