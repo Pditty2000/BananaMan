@@ -42,3 +42,10 @@ def loadScreen(screen, bg_image):
     title_rect = splash_title.get_rect()
     screen.blit(splash_image, (0,0))
     screen.blit(splash_title, (screen_rect.centerx - (title_rect.width/2), screen_rect.centery))
+
+def newWords_button(screen):
+    screen_rect = screen.get_rect()
+    left = screen_rect.center-150
+    top = screen_rect.h-150
+    button_rect = pygame.draw.rect(left, top, 300, 100)
+    button_rect.fill()

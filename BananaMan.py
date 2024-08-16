@@ -167,7 +167,7 @@ if __name__ == '__main__':
     word_list = word.get_words()
     word_index = randint(0, (len(word_list)-1))
     wordBubbles = word.get_bubbles(word_list)
-    print(f'wordBubbles: {wordBubbles}')
+    print(f'word_list: {word_list}')
     
     the_count =  0
     running = True
@@ -177,6 +177,7 @@ if __name__ == '__main__':
         pregame.loadScreen(screen, BACKGROUND_IMAGE)
         # word.show_word_list(screen, word_list)
         word.show_word_bubbles(screen, wordBubbles)
+        pregame.newWords_button(screen)
         pygame.display.flip()
 
         
@@ -186,15 +187,13 @@ if __name__ == '__main__':
             else:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_pos = event.pos
-                    print(f'MOUSECLICK: {event.pos}')
-                    # in place before finish mouseclick and object
+                    for bubble in wordBubbles:
+                        if bubble.rect.collidepoint(mouse_pos):
+                            print(f'~~~> selected word: {bubble.text}')
+                            phrase = bubble.text
+                            main(phrase)
                     word_index = randint(0, (len(word_list)-1))
 
-                    # mouseclick and object
-                    # word_bubble.handle_event(event)
-
-                print(f'--> Word index: {word_index}')
-                    
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         phrase = word_list[word_index]

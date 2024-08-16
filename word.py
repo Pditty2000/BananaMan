@@ -8,6 +8,7 @@ TITLE_TEXT = 'BananaMan!'
 INSTRUCTION_TEXT = 'Press SPACE to begin...'
 TEXT_COLOR = (0,0,0)
 BACKGROUND_IMAGE = 'Images/Banana_yellow_background_474x266.png'
+WORD_COUNT = 5
 splash_image = pygame.image.load(BACKGROUND_IMAGE)
 splash_image = pygame.transform.scale(splash_image, (1080, 606))
 
@@ -16,6 +17,11 @@ filepath = 'data/words.txt'
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 pygame.init()
+
+# returns TITLE_TEXT as surface
+def get_title():
+    title = pygame.font.Font(None, 64).render(TITLE_TEXT, True, TEXT_COLOR)
+    return title
 
 # returns list of words as array of strings
 # get words from website
@@ -41,15 +47,21 @@ def get_words_from_file(textfile):
                 word_list.append(line)
     return word_list
     
-def get_words(list_of_words):
+# create a word list from large list of words
+def get_words():
     word_list = []
     long_list = get_words_from_file(filepath)
     length = len(long_list)
-    for i in range(5):
+    for i in range(WORD_COUNT):          
         word_list.append(select_word(long_list))
+    print(f'++> word_list: {word_list}')
     return word_list
 
-def select_word()
+# returns a word from the list of words
+def select_word(list):
+    length = len(list)
+    index = randint(0, length-1)
+    return list[index]
 
 # show bubble for each possible word... show number of letters for word
 def show_word_bubbles(screen, wordBubbles):
@@ -57,27 +69,11 @@ def show_word_bubbles(screen, wordBubbles):
     list_length = len(wordBubbles)
     for i in range(list_length):
         bubble = wordBubbles[i]
-        word_length = str(len(bubble.text))
-        length_image = pygame.font.Font(None, 32).render(word_length, True, TEXT_COLOR)
-        bubble.rect.y = i*(bubble.rect.height+5)
-        # pygame.draw.ellipse(screen, (255,0,0), bubble.rect)
+        # show bubbles on screen in list on left side
+        bubble.rect.x = (screen_rect.w-bubble.rect.w-10)
+        bubble.rect.y = i*(screen_rect.h/WORD_COUNT)
         bubble.draw(screen)
-        # bubble.draw(screen)
     pygame.display.flip()
-
-# display word list on splash page
-def show_word_list(screen, word_list):
-    instructions = pygame.font.Font(None, 32).render(INSTRUCTION_TEXT, True, TEXT_COLOR)
-    inst_rect = instructions.get_rect()
-    screen_rect = screen.get_rect()
-    list_length = len(word_list)
-    for i in range(list_length):
-        word = word_list[i]
-        wordImage = word_image(word)
-        screen.blit(wordImage, (0, (i*40)))
-    screen.blit(instructions, 
-                ((screen_rect.centerx-(inst_rect.width/2)), 
-                 (screen_rect.height-(inst_rect.height))))
 
 # returns word as Surface
 def word_image(word):
@@ -85,11 +81,6 @@ def word_image(word):
     word_text = f'{word_length} {word}'
     word_image = pygame.font.Font(None, 32).render(word_text, True, TEXT_COLOR)
     return  (word_image)
-
-# returns TITLE_TEXT as surface
-def get_title():
-    title = pygame.font.Font(None, 64).render(TITLE_TEXT, True, TEXT_COLOR)
-    return title
 
 # returns word list as WordBubbles in an array
 def get_bubbles(word_list):
@@ -105,7 +96,30 @@ def bubble_word(word):
     word_bubble = WordBubble(word_rect.x, word_rect.y, word_rect.w, word_rect.h, word)
     return word_bubble
 
+def new_words_button
+
+# # randomly place bubble on screen
+# def get_bubble_position(screen, wordBubble):
+#     screen_width = screen.get_width()
+#     screen_height = screen.get_height()
+#     wordBubble.rect.x = randint(0, screen_width-1)
+#     wordBubble.rect.y = randint(0, screen_height-1)
     
+
+# # display word list on splash page
+# def show_word_list(screen, word_list):
+#     instructions = pygame.font.Font(None, 32).render(INSTRUCTION_TEXT, True, TEXT_COLOR)
+#     inst_rect = instructions.get_rect()
+#     screen_rect = screen.get_rect()
+#     list_length = len(word_list)
+#     for i in range(list_length):
+#         word = word_list[i]
+#         wordImage = word_image(word)
+#         screen.blit(wordImage, (0, (i*40)))
+#     screen.blit(instructions, 
+#                 ((screen_rect.centerx-(inst_rect.width/2)), 
+#                  (screen_rect.height-(inst_rect.height))))
+
 
 class WordBubble:
     def __init__(self, x, y, w, h, text=''):
