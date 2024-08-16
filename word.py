@@ -11,13 +11,15 @@ BACKGROUND_IMAGE = 'Images/Banana_yellow_background_474x266.png'
 splash_image = pygame.image.load(BACKGROUND_IMAGE)
 splash_image = pygame.transform.scale(splash_image, (1080, 606))
 
+filepath = 'data/words.txt'
+
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 pygame.init()
 
 # returns list of words as array of strings
-def get_words():
-    pygame.display.flip()
+# get words from website
+def get_words_from_web():
     driver = webdriver.Chrome(options=chrome_options)
     driver.get("https://www.randomlists.com/random-words")
     driver.get_screenshot_as_file("screenshots/driver_screenshot.png") 
@@ -27,12 +29,32 @@ def get_words():
         word = word.text
         word_list.append(word)
     return word_list
+    
+# get word list from text file
+def get_words_from_file(textfile):
+    word_list = []
+    with open(textfile, "r") as file:
+        lines = file.readlines()
+        for line in lines:
+            line = line.rstrip('\n')
+            if line.isalpha():
+                word_list.append(line)
+    return word_list
+    
+def get_words(list_of_words):
+    word_list = []
+    long_list = get_words_from_file(filepath)
+    length = len(long_list)
+    for i in range(5):
+        word_list.append(select_word(long_list))
+    return word_list
+
+def select_word()
 
 # show bubble for each possible word... show number of letters for word
 def show_word_bubbles(screen, wordBubbles):
     screen_rect = screen.get_rect()
     list_length = len(wordBubbles)
-    print(f'======> show bubbles..')
     for i in range(list_length):
         bubble = wordBubbles[i]
         word_length = str(len(bubble.text))
@@ -40,7 +62,6 @@ def show_word_bubbles(screen, wordBubbles):
         bubble.rect.y = i*(bubble.rect.height+5)
         # pygame.draw.ellipse(screen, (255,0,0), bubble.rect)
         bubble.draw(screen)
-        print(f'==> bubble.rect: {bubble.rect}, bubble.text length: {word_length}')
         # bubble.draw(screen)
     pygame.display.flip()
 
