@@ -98,6 +98,9 @@ def main(PHRASE):
         letter_space = LetterSpace(((i*50)+100), 100, 40, 40, PHRASE[i])
         letter_spaces.append(letter_space)
 
+    # make alphabet buttons
+    
+
     # make stat box area
     guess_count = StatBox((screen_width-(screen_width/4)), (screen_height-160), (screen_width/4), 160)
 
@@ -166,29 +169,34 @@ if __name__ == '__main__':
     pregame.loadScreen(screen, BACKGROUND_IMAGE)
     word_list = word.get_words()
     word_index = randint(0, (len(word_list)-1))
+    wordBubbles = word.get_bubbles(word_list)
+    print(f'word_list: {word_list}')
     
     the_count =  0
     running = True
     while running:   
-        pregame.loadScreen(screen, BACKGROUND_IMAGE)
-
         the_count += 1    
-        pregame.show_word_list(screen, word_list)
-        pygame.display.flip()
- 
-        # phrase = pregame.splashscreen(screen, BACKGROUND_IMAGE, word_list)
-        
 
+        pregame.loadScreen(screen, BACKGROUND_IMAGE)
+        # word.show_word_list(screen, word_list)
+        word.show_word_bubbles(screen, wordBubbles)
+        # pregame.newWords_button(screen)
+        pygame.display.flip()
+
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 running = False
             else:
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_pos = pygame.mouse.get_pos()
-                    print(f'MOUSECLICK: {mouse_pos}')
-                    word_index = randint(0, (len(word_list)-1))
-                print(f'--> Word index: {word_index}')
-                    
+                    mouse_pos = event.pos
+                    for bubble in wordBubbles:
+                        if bubble.rect.collidepoint(mouse_pos):
+                            print(f'~~~> selected word: {bubble.text}')
+                            phrase = bubble.text
+                            main(phrase)
+                    # word_index = randint(0, (len(word_list)-1))
+
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         phrase = word_list[word_index]
@@ -200,22 +208,3 @@ if __name__ == '__main__':
 print(f'<<<<<<<<<<<<<<<<<<<< END >>>>>>>>>>>>>>>>>>>>>{the_count}')
 
 
-# class InputBox:
-#     def __init__(self, x, y, w, h, text=''):
-#         self.rect = pygame.Rect(x, y, w, h)
-#         self.color = (200,200,200)
-#         self.text_color = (0,0,0)
-#         self.text = text
-#         self.txt_surface = FONT.render(self.text, True, self.text_color)
-#         self.submitted_text = ''
-#         # Re-render the text.
-#         self.txt_surface = FONT.render(self.text, True, self.text_color)
-#     def update(self):
-#         # Resize the box if the text is too long.
-#         width = max(10, self.txt_surface.get_width())
-#         height = max(10, self.txt_surface.get_height())
-#         self.rect.w = width
-#         self.rect.h = height
-#     def draw(self, screen):
-#         # pygame.draw.rect(screen, self.color, self.rect)
-#         screen.blit(self.txt_surface, (self.rect.x, self.rect.y))
