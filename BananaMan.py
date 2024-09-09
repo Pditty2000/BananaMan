@@ -1,5 +1,6 @@
 import pygame
 import sys
+import string
 from random import randint
 import pregame
 import word
@@ -33,6 +34,8 @@ class LetterSpace:
     def update(self):
         if self.isfound:
             self.color = COLOR_FOUND
+        else:
+            self.color = COLOR_UNFOUND
     def draw(self, screen):
         if self.text == ' ':
             self.color = BACKGROUND_COLOR
@@ -61,10 +64,11 @@ class StatBox:
         screen.blit(self.error_text, (self.rect.x+10, self.rect.y+(2*(self.rect.h/4))))
         screen.blit(self.remain_text, (self.rect.x+10, self.rect.y+(3*(self.rect.h/4))))
 
-def submitInput(input, phrase_length, letter_spaces):
+def submitInput(input, letter_spaces):
     count = remaining = 0
     success = False
-    for i in range(phrase_length):
+    letters_length = len(letter_spaces)
+    for i in range(letters_length):
         if letter_spaces[i].text == input:
             letter_spaces[i].found()
             success = True
@@ -75,7 +79,7 @@ def submitInput(input, phrase_length, letter_spaces):
                 remaining+=1
     return (count, remaining, success)
 
-def winner_banner(guess_count):
+def winner_banner():
     timer = 100
     bg_banner = 'Images/Winner_banner_1080x675.png'
     bg_image = pygame.image.load(bg_banner)
@@ -84,30 +88,57 @@ def winner_banner(guess_count):
         screen.blit(bg_image, (0,0))
         pygame.display.flip()
 
+def guess(guess_count, input, letter_spaces):
+    done = False
+    guess_count.count += 1
+    guess = submitInput(input, letter_spaces)
+    # submitted_input = input
+    print(f'count: {guess[0]}, remaining: {guess[1]}')
+    if not guess[2]:
+        pregame.error(screen)
+        guess_count.errors+=1
+    guess_count.correct = guess[0]
+    guess_count.remaining = guess[1]
+    input1 = ''
+    if guess_count.remaining <= 0:
+        winner_banner()
+        done = True
+    return done
+
+def get_letter_spaces(PHRASE):
+    phrase_length = len(PHRASE)
+    letter_spaces = []
+    for i in range(phrase_length):
+        letter_space = LetterSpace(((i*50)+100), 100, 40, 40, PHRASE[i])
+        letter_spaces.append(letter_space)
+    return letter_spaces
+
+
 def main(PHRASE):
     clock = pygame.time.Clock()
 
     # make phrase
-    # PHRASE = "This is a TEST"
     PHRASE = PHRASE.upper()
 
     # make letter spaces
-    letter_spaces = []
-    phrase_length = len(PHRASE)
-    for i in range(phrase_length):
-        letter_space = LetterSpace(((i*50)+100), 100, 40, 40, PHRASE[i])
-        letter_spaces.append(letter_space)
-
-    # make alphabet buttons
-    
+    letter_spaces = get_letter_spaces(PHRASE)
+    # make alphabet buttons  <<<~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    letter_buttons = []
+    alpha_list = list(string.ascii_uppercase)    
+    for i in range(13):
+        letter_button = LetterSpace(((i*50)+100), 200, 40, 40, alpha_list[i])
+        letter_button.found()
+        letter_buttons.append(letter_button)
+    for i in range(13):
+        letter_button = LetterSpace(((i*50)+100), 250, 40, 40, alpha_list[i+13])
+        letter_button.found()
+        letter_buttons.append(letter_button)
 
     # make stat box area
     guess_count = StatBox((screen_width-(screen_width/4)), (screen_height-160), (screen_width/4), 160)
 
     # start playing
     input1 = ''
-    submitted_input = ''
-    error_count = 0
     done = False
     while not done:
         for event in pygame.event.get():
@@ -119,24 +150,21 @@ def main(PHRASE):
                 e_key = event.key
                 if e_key in range(pygame.K_a, pygame.K_z + 1):
                     input1 = event.unicode.upper()
-                if e_key == pygame.K_RETURN and input1 != '':
-                    guess_count.count += 1
-                    guess = submitInput(input1, phrase_length, letter_spaces)
-                    submitted_input = input1
-                    print(f'count: {guess[0]}, remaining: {guess[1]}')
-                    if not guess[2]:
-                        pregame.error(screen)
-                        error_count+=1
-                    guess_count.correct = guess[0]
-                    guess_count.remaining = guess[1]
-                    guess_count.errors = error_count
-                    input1 = ''
-                if guess_count.remaining <= 0:
-                    winner_banner(guess_count)
-                    done = True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = event.pos
+                for button in letter_buttons:
+                    if button.rect.collidepoint(mouse_pos):
+                        button.isfound = False
+                        button.update()
+                        done = guess(guess_count, button.text, letter_spaces)     
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN and input1 != '':
+                for button in letter_buttons:
+                    if button.text == input1:
+                        button.isfound = False
+                        button.update()
+                        done = guess(guess_count, input1, letter_spaces)
 
         input_letter = FONT.render(input1, True, (0,0,0))
-        submitted_letter = FONT.render(submitted_input, True, ((255,0,0)))
             
             # # if I need to make it resizeable
             # if event.type == pygame.VIDEORESIZE:
@@ -150,7 +178,6 @@ def main(PHRASE):
 
         # show input letter (last key typed) and submitted letter
         screen.blit(input_letter, (screen_width/2, screen_height/2))
-        screen.blit(submitted_letter, (screen_width/2, screen_height/2-40))
 
         # show guess count totals
         guess_count.update()
@@ -159,6 +186,10 @@ def main(PHRASE):
         # draw the answer letter boxes
         for letter in letter_spaces:
             letter.draw(screen)
+        
+        # draw the alphabet
+        for button in letter_buttons:
+            button.draw(screen)
 
         pygame.display.flip()
         clock.tick(30)
