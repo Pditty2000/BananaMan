@@ -54,7 +54,7 @@ def get_words():
     length = len(long_list)
     for i in range(WORD_COUNT):          
         word_list.append(select_word(long_list))
-    print(f'++> word_list: {word_list}')
+    print(f'++> {WORD_COUNT} random words: {word_list}')
     return word_list
 
 # returns a word from the list of words
@@ -96,7 +96,8 @@ def bubble_word(word):
     word_bubble = WordBubble(word_rect.x, word_rect.y, word_rect.w, word_rect.h, word)
     return word_bubble
 
-def new_words_button
+# def new_words_button(screen):
+
 
 # # randomly place bubble on screen
 # def get_bubble_position(screen, wordBubble):

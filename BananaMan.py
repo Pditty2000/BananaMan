@@ -98,6 +98,9 @@ def main(PHRASE):
         letter_space = LetterSpace(((i*50)+100), 100, 40, 40, PHRASE[i])
         letter_spaces.append(letter_space)
 
+    # make alphabet buttons
+    
+
     # make stat box area
     guess_count = StatBox((screen_width-(screen_width/4)), (screen_height-160), (screen_width/4), 160)
 
@@ -177,7 +180,7 @@ if __name__ == '__main__':
         pregame.loadScreen(screen, BACKGROUND_IMAGE)
         # word.show_word_list(screen, word_list)
         word.show_word_bubbles(screen, wordBubbles)
-        pregame.newWords_button(screen)
+        # pregame.newWords_button(screen)
         pygame.display.flip()
 
         
@@ -192,7 +195,7 @@ if __name__ == '__main__':
                             print(f'~~~> selected word: {bubble.text}')
                             phrase = bubble.text
                             main(phrase)
-                    word_index = randint(0, (len(word_list)-1))
+                    # word_index = randint(0, (len(word_list)-1))
 
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
