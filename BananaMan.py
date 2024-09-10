@@ -30,6 +30,16 @@ class LetterSpace:
         self.color = (0,0,0)
         self.text_color = COLOR_HIDDEN
         self.txt_surface = FONT.render(text, True, self.text_color)
+    def sparkle(self):
+        red = randint(0, 255)
+        green = randint(0, 255)
+        blue = randint(0, 255)
+        if red < 175 and green < 175 and blue < 175:
+            self.text_color = (0,0,0)
+        else:
+            self.text_color = (255,255,255)
+        self.color = (red,green,blue)
+
     def jiggle(self):
         choice = randint(0, 1)
         x_dist = abs(self.originx-self.rect.centerx)
@@ -124,6 +134,7 @@ def winner_banner(letter_spaces):
         # draw the answer letter boxes
         for letter in letter_spaces:
             letter.jiggle()
+            letter.sparkle()
             letter.draw(screen)
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
