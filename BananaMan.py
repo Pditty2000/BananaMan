@@ -23,11 +23,42 @@ screen_height = screen.get_height()
 class LetterSpace:
     def __init__(self, x, y, w, h, text=''):
         self.rect = pygame.Rect(x, y, w, h)
+        self.originx = self.rect.centerx
+        self.originy = self.rect.centery
         self.is_shown = False
         self.text = text
         self.color = (0,0,0)
         self.text_color = COLOR_HIDDEN
         self.txt_surface = FONT.render(text, True, self.text_color)
+    def jiggle(self):
+        choice = randint(0, 1)
+        x_dist = abs(self.originx-self.rect.centerx)
+        y_dist = abs(self.originy-self.rect.centery)
+        move_dist = randint(0, 2)
+        if choice == 0:
+            self.rect.centerx += move_dist
+        elif choice == 1:
+            self.rect.centery += move_dist
+        elif choice == 2:
+            self.rect.centerx -= move_dist
+        elif choice == 3:
+            self.rect.centery -= move_dist
+        elif choice == 4:
+            self.rect.centerx += move_dist
+            self.rect.centery += move_dist
+        elif choice == 5:
+            self.rect.centerx -= move_dist
+            self.rect.centery -= move_dist
+        elif choice == 6:
+            self.rect.centerx += move_dist
+            self.rect.centery -= move_dist
+        elif choice == 7:
+            self.rect.centerx -= move_dist
+            self.rect.centery += move_dist
+        if x_dist > 20:
+            self.rect.centerx = self.originx
+        if y_dist > 20:
+            self.rect.centery = self.originy
     def show(self):
         self.is_shown = True
         self.update()
@@ -92,6 +123,7 @@ def winner_banner(letter_spaces):
         screen.blit(bg_image, (0,0))
         # draw the answer letter boxes
         for letter in letter_spaces:
+            letter.jiggle()
             letter.draw(screen)
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -214,7 +246,7 @@ if __name__ == '__main__':
     pygame.display.set_caption("BananaMan!")
 
     word_list = word.get_words()
-    print(f'===> word_list: {word_list}')
+    # print(f'===> word_list: {word_list}')
 
     pygame.display.flip()
 
