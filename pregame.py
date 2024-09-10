@@ -34,18 +34,30 @@ def error(screen):
         errorscreen(screen)
         timer -= 1
 
-def loadScreen(screen, bg_image):
+def loadScreen(screen, bg_image, word_list):
     screen_rect = screen.get_rect()
     splash_image = pygame.image.load(bg_image)
     splash_image = pygame.transform.scale(splash_image, (1080, 606))
     splash_title = word.get_title()
     title_rect = splash_title.get_rect()
     screen.blit(splash_image, (0,0))
-    screen.blit(splash_title, (screen_rect.centerx - (title_rect.width/2), screen_rect.centery))
+    screen.blit(splash_title, (screen_rect.centerx - (title_rect.width/2), 150))
 
-def newWords_button(screen):
+def show_list(screen, word_list):
+    wordBubbles = word.get_bubbles(word_list)
+    print(f'word_list: {word_list}')
+    word.show_word_bubbles(screen, wordBubbles)
+    # pygame.display.flip()
+
+def show_button(screen):
+    button = get_list_button(screen)
+    button_color = (44,242,136)
+    pygame.draw.rect(screen, button_color, button)
+    return button
+
+def get_list_button(screen):
+    button_width = 175
+    button_height = 50
     screen_rect = screen.get_rect()
-    left = screen_rect.center-150
-    top = screen_rect.h-150
-    button_rect = pygame.draw.rect(left, top, 300, 100)
-    button_rect.fill()
+    button_rect = pygame.rect.Rect(screen_rect.centerx-100, screen_rect.centery+50, button_width, button_height)
+    return button_rect

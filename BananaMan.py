@@ -94,6 +94,8 @@ def winner_banner(letter_spaces):
         for letter in letter_spaces:
             letter.draw(screen)
         for event in pygame.event.get():
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                timer = 0
             if event.type == pygame.MOUSEBUTTONDOWN:
                 timer = 0
             if event.type == pygame.KEYDOWN:
@@ -137,6 +139,8 @@ def get_letter_buttons():
         letter_button.show()
         letter_buttons.append(letter_button)
     return letter_buttons
+
+
 
 def main(PHRASE):
     clock = pygame.time.Clock()
@@ -203,50 +207,60 @@ def main(PHRASE):
         for button in letter_buttons:
             button.draw(screen)
 
+
         pygame.display.flip()
         clock.tick(30)
 
 if __name__ == '__main__':
     pygame.display.set_caption("BananaMan!")
 
-    pregame.loadScreen(screen, BACKGROUND_IMAGE)
     word_list = word.get_words()
-    word_index = randint(0, (len(word_list)-1))
-    wordBubbles = word.get_bubbles(word_list)
-    print(f'word_list: {word_list}')
-    
+    print(f'===> word_list: {word_list}')
+
+    pygame.display.flip()
+
     the_count =  0
     running = True
     while running:   
         the_count += 1    
-
-        pregame.loadScreen(screen, BACKGROUND_IMAGE)
-        # word.show_word_list(screen, word_list)
+        wordBubbles = word.get_bubbles(word_list)
         word.show_word_bubbles(screen, wordBubbles)
-        # pregame.newWords_button(screen)
+        pregame.loadScreen(screen, BACKGROUND_IMAGE, word_list)
+        pregame.show_list(screen, word_list)
+        new_list_button = pregame.show_button(screen)
         pygame.display.flip()
-
         
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 running = False
             else:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_pos = event.pos
+                    if new_list_button.collidepoint(mouse_pos):
+                        word_list = word.get_words()
                     for bubble in wordBubbles:
                         if bubble.rect.collidepoint(mouse_pos):
                             print(f'~~~> selected word: {bubble.text}')
                             phrase = bubble.text
                             main(phrase)
-                    # word_index = randint(0, (len(word_list)-1))
+                    
 
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        phrase = word_list[word_index]
-                        print(f'====> main phrase: {phrase}')
-                        main(phrase)
+                    if event.key == pygame.K_1:
+                        phrase = word_list[0]
+                    elif event.key == pygame.K_2:
+                        phrase = word_list[1]
+                    elif event.key == pygame.K_3:
+                        phrase = word_list[2]
+                    elif event.key == pygame.K_4:
+                        phrase = word_list[3]
+                    elif event.key == pygame.K_5:
+                        phrase = word_list[4] 
                     else:
-                        pregame.error(screen)
+                        phrase = word_list[randint(0, (len(word_list)-1))]
+                    print(f'====> main phrase: {phrase}')
+                    main(phrase)
 
 print(f'<<<<<<<<<<<<<<<<<<<< END >>>>>>>>>>>>>>>>>>>>>{the_count}')
 

@@ -6,6 +6,7 @@ from selenium.webdriver.chrome.options import Options
 
 TITLE_TEXT = 'BananaMan!'
 INSTRUCTION_TEXT = 'Press SPACE to begin...'
+TITLE_COLOR = (97,97,56)
 TEXT_COLOR = (0,0,0)
 BACKGROUND_IMAGE = 'Images/Banana_yellow_background_474x266.png'
 WORD_COUNT = 5
@@ -20,7 +21,7 @@ pygame.init()
 
 # returns TITLE_TEXT as surface
 def get_title():
-    title = pygame.font.Font(None, 64).render(TITLE_TEXT, True, TEXT_COLOR)
+    title = pygame.font.Font(None, 64).render(TITLE_TEXT, True, TITLE_COLOR)
     return title
 
 # returns list of words as array of strings
@@ -51,87 +52,71 @@ def get_words_from_file(textfile):
 def get_words():
     word_list = []
     long_list = get_words_from_file(filepath)
-    length = len(long_list)
-    for i in range(WORD_COUNT):          
-        word_list.append(select_word(long_list))
+    for i in range(WORD_COUNT):
+        new_word = select_word(long_list)
+        while new_word not in word_list:
+            word_list.append(new_word)
     print(f'++> {WORD_COUNT} random words: {word_list}')
     return word_list
 
-# returns a word from the list of words
+# returns a random word from the list of words
 def select_word(list):
     length = len(list)
     index = randint(0, length-1)
     return list[index]
 
-# show bubble for each possible word... show number of letters for word
+# show bubble for each possible word
 def show_word_bubbles(screen, wordBubbles):
     screen_rect = screen.get_rect()
     list_length = len(wordBubbles)
     for i in range(list_length):
         bubble = wordBubbles[i]
-        # show bubbles on screen in list on left side
-        bubble.rect.x = (screen_rect.w-bubble.rect.w-10)
-        bubble.rect.y = i*(screen_rect.h/WORD_COUNT)
+        bubble.rect.x = (screen_rect.w-300) 
+        bubble.rect.y = (i*42)+(screen_rect.h-250)
         bubble.draw(screen)
-    pygame.display.flip()
+    # pygame.display.flip()
 
 # returns word as Surface
 def word_image(word):
     word_length = len(word)
     word_text = f'{word_length} {word}'
     word_image = pygame.font.Font(None, 32).render(word_text, True, TEXT_COLOR)
-    return  (word_image)
+    return (word_image)
 
 # returns word list as WordBubbles in an array
 def get_bubbles(word_list):
     words = []
-    for word in word_list:
-        words.append(bubble_word(word))
+    for i in range(len(word_list)):
+        word = word_list[i]
+        b_word = bubble_word(word, i)
+        words.append(b_word)
     return words
 
 # returns word as a WordBubble
-def bubble_word(word):
+def bubble_word(word, index):
     wordImage = word_image(word)
     word_rect = wordImage.get_rect()
-    word_bubble = WordBubble(word_rect.x, word_rect.y, word_rect.w, word_rect.h, word)
+    word_bubble = WordBubble(index, word_rect.x, word_rect.y, word_rect.w, word_rect.h, word)
     return word_bubble
 
 # def new_words_button(screen):
-
-
-# # randomly place bubble on screen
-# def get_bubble_position(screen, wordBubble):
-#     screen_width = screen.get_width()
-#     screen_height = screen.get_height()
-#     wordBubble.rect.x = randint(0, screen_width-1)
-#     wordBubble.rect.y = randint(0, screen_height-1)
-    
-
-# # display word list on splash page
-# def show_word_list(screen, word_list):
-#     instructions = pygame.font.Font(None, 32).render(INSTRUCTION_TEXT, True, TEXT_COLOR)
-#     inst_rect = instructions.get_rect()
-#     screen_rect = screen.get_rect()
-#     list_length = len(word_list)
-#     for i in range(list_length):
-#         word = word_list[i]
-#         wordImage = word_image(word)
-#         screen.blit(wordImage, (0, (i*40)))
-#     screen.blit(instructions, 
-#                 ((screen_rect.centerx-(inst_rect.width/2)), 
-#                  (screen_rect.height-(inst_rect.height))))
-
+def newWords_button(screen):
+    screen_rect = screen.get_rect()
+    left = screen_rect.centerx-150
+    top = screen_rect.h-150
+    button_rect = pygame.draw.rect(screen, (0,255,0), (left, top, 300, 100))
 
 class WordBubble:
-    def __init__(self, x, y, w, h, text=''):
+    def __init__(self, index, x, y, w, h, text):
         self.rect = pygame.Rect(x, y, w, h)
+        self.index = index
         self.color = (200,200,200)
         self.text_color = (0,0,0)
         self.text = text
-        self.text_length = str(len(self.text))
         self.txt_surface = pygame.font.Font(None, 64).render(self.text, True, self.text_color)
-        self.length_surface = pygame.font.Font(None, 64).render(self.text_length, True, self.text_color)
-        self.length_rect = self.length_surface.get_rect()
+        # self.length_surface = pygame.font.Font(None, 64).render(self.text_length, True, self.text_color)
+        # self.length_rect = self.length_surface.get_rect()
+        self.index_surface = pygame.font.Font(None, 64).render(f'{self.index+1})', True, self.text_color)
         self.submitted_text = ''
         self.rect.width = self.txt_surface.get_width()
         self.rect.height = self.txt_surface.get_height()
@@ -141,10 +126,24 @@ class WordBubble:
         height = max(10, self.txt_surface.get_height())
         self.rect.w = width
         self.rect.h = height
+    def make_bubble_letters(self, screen, text):
+        text_length = len(text)
+        if text_length > 12:
+            difficulty = "long"
+            letter_width = 300/text_length
+        elif text_length < 6:
+            difficulty = "short"
+            letter_width = 30
+        else:
+            difficulty = "medium"
+            letter_width = 25
+        
+        for i in range(len(text)):
+            letter_height = 40
+            pygame.draw.ellipse(screen, (0,0,25), (self.rect.x+(i*letter_width), self.rect.y, letter_width, letter_height))
     def draw(self, screen):
-        pygame.draw.ellipse(screen, (0,0,255), self.rect)
-        screen.blit(self.length_surface, ((self.rect.centerx-(self.length_rect.w/2)), self.rect.y))
-
+        self.make_bubble_letters(screen, self.text)
+        screen.blit(self.index_surface, (self.rect.x-40, self.rect.y))
 
 
 
