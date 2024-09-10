@@ -13,7 +13,7 @@ TITLE_FONT = pygame.font.Font(None, 64)
 # splash_image = pygame.transform.scale(splash_image, (1080, 606))
 
 error_image = pygame.image.load(ERROR_IMAGE)
-error_image = pygame.transform.scale(error_image, (606, 606))
+error_image = pygame.transform.scale(error_image, (303, 303))
 # splash_title = TITLE_FONT.render(TITLE_TEXT, True, TEXT_COLOR)
 # title_rect = splash_title.get_rect()
 
@@ -45,14 +45,18 @@ def loadScreen(screen, bg_image, word_list):
 
 def show_list(screen, word_list):
     wordBubbles = word.get_bubbles(word_list)
-    print(f'word_list: {word_list}')
+    # print(f'word_list: {word_list}')
     word.show_word_bubbles(screen, wordBubbles)
     # pygame.display.flip()
 
 def show_button(screen):
+    button_text_surface = pygame.font.Font(None, 48).render('New List', True, (0,0,0))
+    bts_rect = button_text_surface.get_rect()
     button = get_list_button(screen)
+    bts_rect.center = button.center
     button_color = (44,242,136)
     pygame.draw.rect(screen, button_color, button)
+    screen.blit(button_text_surface, (bts_rect.x, bts_rect.y))
     return button
 
 def get_list_button(screen):

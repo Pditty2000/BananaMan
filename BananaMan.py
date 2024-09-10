@@ -47,9 +47,9 @@ class LetterSpace:
         screen.blit(self.txt_surface, (self.rect.x + centerOffset, self.rect.y))
 
 class StatBox:
-    def __init__(self, x, y, w, h):
+    def __init__(self, x, y, w, h, length):
         self.count = 0
-        self.remaining = 1
+        self.remaining = length
         self.correct = 0
         self.errors = 0
         self.color = (150,150,150)
@@ -140,20 +140,19 @@ def get_letter_buttons():
         letter_buttons.append(letter_button)
     return letter_buttons
 
-
-
 def main(PHRASE):
     clock = pygame.time.Clock()
 
     # make letter spaces
     PHRASE = PHRASE.upper()
+    phrase_length = len(PHRASE)
     letter_spaces = get_letter_spaces(PHRASE)
 
     # make alphabet buttons  
     letter_buttons = get_letter_buttons()
 
     # make stat box area
-    guess_count = StatBox((screen_width-(screen_width/4)), (screen_height-160), (screen_width/4), 160)
+    guess_count = StatBox((screen_width-(screen_width/4)), (screen_height-160), (screen_width/4), 160, phrase_length)
 
     # start playing
     input1 = ''
