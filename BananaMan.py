@@ -39,7 +39,6 @@ class LetterSpace:
         else:
             self.text_color = (255,255,255)
         self.color = (red,green,blue)
-
     def jiggle(self):
         choice = randint(0, 1)
         x_dist = abs(self.originx-self.rect.centerx)
@@ -80,6 +79,9 @@ class LetterSpace:
             self.color = COLOR_SHOWN
         else:
             self.color = COLOR_HIDDEN
+    def reset(self):
+        self.rect.centerx = self.originx
+        self.rect.centery =  self.originy
     def draw(self, screen):
         if self.text == ' ':
             self.color = BACKGROUND_COLOR
@@ -165,22 +167,52 @@ def get_letter_spaces(PHRASE):
     phrase_length = len(PHRASE)
     letter_spaces = []
     for i in range(phrase_length):
-        letter_space = LetterSpace(((i*50)+100), 100, 40, 40, PHRASE[i])
+        letter_space = LetterSpace(100, 100, 40, 40, PHRASE[i])
         letter_spaces.append(letter_space)
+    center_letter_spaces(letter_spaces)
     return letter_spaces
 
+def center_letter_spaces(letter_spaces):
+    box_width = 50
+    center = screen_width/2
+    spaces = int(screen_width/box_width)
+    letters = len(letter_spaces)
+    extra_spaces = spaces - letters
+
+    # split into 2 lines if too long for screen
+    if extra_spaces <= 0:
+        half = int(letters/2)
+        first_slice = letter_spaces[:half]
+        second_slice = letter_spaces[half:]
+        center_letter_spaces(first_slice)
+        for l_space in second_slice:
+            l_space.originy += 50
+            l_space.reset()
+        center_letter_spaces(second_slice)
+    else:
+        mid = int(letters/2)
+        if letters%2 != 0:
+            for i in range(letters):
+                letter_space = letter_spaces[i]
+                letter_space.originx = center+((i - mid)*50)
+                letter_space.reset()
+        else:
+            for i in range(letters):
+                letter_space = letter_spaces[i]
+                letter_space.originx = center+((i - mid)*50)+25
+                letter_space.reset()
+    return letter_spaces
+    
 # create buttons for selecting letters - default shown
 def get_letter_buttons():
     letter_buttons = []
     alpha_list = list(string.ascii_uppercase)    
-    for i in range(13):
-        letter_button = LetterSpace(((i*50)+100), 200, 40, 40, alpha_list[i])
+    for i in range(26):
+        letter_button = LetterSpace(100, 275, 40, 40, alpha_list[i])
         letter_button.show()
         letter_buttons.append(letter_button)
-    for i in range(13):
-        letter_button = LetterSpace(((i*50)+100), 250, 40, 40, alpha_list[i+13])
-        letter_button.show()
-        letter_buttons.append(letter_button)
+
+    letter_buttons = center_letter_spaces(letter_buttons)
     return letter_buttons
 
 def main(PHRASE):
@@ -224,11 +256,6 @@ def main(PHRASE):
 
         input_letter = FONT.render(input1, True, (0,0,0))
             
-            # # if I need to make it resizeable
-            # if event.type == pygame.VIDEORESIZE:
-            #     # There's some code to add back window content here.
-            #     surface = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
-
 
     # start the displaying   
         # fill background color
@@ -248,6 +275,9 @@ def main(PHRASE):
         # draw the alphabet
         for button in letter_buttons:
             button.draw(screen)
+
+        # TEST: show line(thin rect) down middle of screen
+        pygame.draw.rect(screen, (0,0,0), (screen_width/2, 0, 5, screen_height))
 
 
         pygame.display.flip()
