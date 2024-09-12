@@ -14,6 +14,7 @@ COLOR_SHOWN = (0,255,255)
 FONT = pygame.font.Font(None, 64)
 smallFONT = pygame.font.Font(None, 32)
 FOUND_COUNT = 0
+INPUT_COLOR = (255,75,75)
 
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode(SCREEN_SIZE)
@@ -220,6 +221,7 @@ def main(PHRASE):
 
     # make letter spaces
     PHRASE = PHRASE.upper()
+    phrase_surface = pygame.font.Font(None, 64).render(PHRASE, True, (0,0,0))
     phrase_length = len(PHRASE)
     letter_spaces = get_letter_spaces(PHRASE)
 
@@ -233,6 +235,15 @@ def main(PHRASE):
     input1 = ''
     done = False
     while not done:
+        mouse_pos = pygame.mouse.get_pos()
+        for button in letter_buttons:
+            if button.rect.collidepoint(mouse_pos):
+                if button.color != COLOR_HIDDEN:
+                    input1 = button.text
+                    button.color = (0,0,255)
+            else:
+                if button.color != COLOR_HIDDEN:
+                    button.color = COLOR_SHOWN
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
@@ -242,8 +253,8 @@ def main(PHRASE):
                 e_key = event.key
                 if e_key in range(pygame.K_a, pygame.K_z + 1):
                     input1 = event.unicode.upper()
+
             if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_pos = event.pos
                 for button in letter_buttons:
                     if button.rect.collidepoint(mouse_pos):
                         button.hide()
@@ -254,7 +265,7 @@ def main(PHRASE):
                         button.hide()
                         done = guess(guess_count, input1, letter_spaces)
 
-        input_letter = FONT.render(input1, True, (0,0,0))
+        input_letter = FONT.render(input1, True, INPUT_COLOR)
             
 
     # start the displaying   
@@ -262,7 +273,7 @@ def main(PHRASE):
         screen.fill(BACKGROUND_COLOR)
 
         # show input letter (last key typed) and submitted letter
-        screen.blit(input_letter, (screen_width/2, screen_height/2))
+        screen.blit(input_letter, (screen_width/2, 207))
 
         # show guess count totals
         guess_count.update()
@@ -275,10 +286,6 @@ def main(PHRASE):
         # draw the alphabet
         for button in letter_buttons:
             button.draw(screen)
-
-        # TEST: show line(thin rect) down middle of screen
-        pygame.draw.rect(screen, (0,0,0), (screen_width/2, 0, 5, screen_height))
-
 
         pygame.display.flip()
         clock.tick(30)
@@ -316,8 +323,7 @@ if __name__ == '__main__':
                             print(f'~~~> selected word: {bubble.text}')
                             phrase = bubble.text
                             main(phrase)
-                    
-
+            
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_1:
                         phrase = word_list[0]
