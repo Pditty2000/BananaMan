@@ -174,20 +174,19 @@ def get_letter_spaces(PHRASE):
     return letter_spaces
 
 def center_letter_spaces(letter_spaces):
-    box_width = 50
+    box_width = letter_spaces[0].rect.w + 10
+    box_height = letter_spaces[0].rect.h + 10
     center = screen_width/2
     spaces = int(screen_width/box_width)
     letters = len(letter_spaces)
     extra_spaces = spaces - letters
-
-    # split into 2 lines if too long for screen
-    if extra_spaces <= 0:
+    if extra_spaces <= 0: # split into 2 lines if too long for screen
         half = int(letters/2)
         first_slice = letter_spaces[:half]
         second_slice = letter_spaces[half:]
         center_letter_spaces(first_slice)
         for l_space in second_slice:
-            l_space.originy += 50
+            l_space.originy += box_height
             l_space.reset()
         center_letter_spaces(second_slice)
     else:
@@ -195,12 +194,12 @@ def center_letter_spaces(letter_spaces):
         if letters%2 != 0:
             for i in range(letters):
                 letter_space = letter_spaces[i]
-                letter_space.originx = center+((i - mid)*50)
+                letter_space.originx = center+((i - mid)*box_width)
                 letter_space.reset()
         else:
             for i in range(letters):
                 letter_space = letter_spaces[i]
-                letter_space.originx = center+((i - mid)*50)+25
+                letter_space.originx = center+((i - mid)*box_width)+(box_width/2)
                 letter_space.reset()
     return letter_spaces
     
@@ -216,8 +215,65 @@ def get_letter_buttons():
     letter_buttons = center_letter_spaces(letter_buttons)
     return letter_buttons
 
+def get_diff_buttons():
+    diff_buttons = []
+    midx = screen_width/2
+    difficulties = ['1) EASY', '2) MEDIUM', '3) HARD']
+    for i in range(len(difficulties)):
+        button = LetterSpace(midx-150, 175, 300, 75, difficulties[i])
+        diff_buttons.append(button)
+    diff_buttons = center_letter_spaces(diff_buttons)
+    return diff_buttons
+
+def get_difficulty():
+    difficulty = 0
+    text = 'Select Difficulty'
+    text_surface = pygame.font.Font(None, 64).render(text, True, (0,0,0))
+    text_rect = text_surface.get_rect()
+    text_rect.centerx = screen_width/2
+    text_rect.y = 100
+    diff_buttons = get_diff_buttons()
+    while difficulty == 0:
+        mouse_pos = pygame.mouse.get_pos()
+        for button in diff_buttons:
+            if button.rect.collidepoint(mouse_pos):
+                if button.color != COLOR_HIDDEN:
+                    button.color = (0,0,255)
+            else:
+                if button.color != COLOR_HIDDEN:
+                    button.color = COLOR_SHOWN
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                for button in diff_buttons:
+                    if button.rect.collidepoint(mouse_pos):
+                        difficulty = button.text
+            if event.type == pygame.QUIT:
+                difficulty = -1
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                difficulty = -1
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    difficulty = '1) EASY'
+                elif event.key == pygame.K_2:
+                    difficulty = '2) MEDIUM'
+                elif event.key == pygame.K_3:
+                    difficulty = '3) HARD'
+                else:
+                    print(f'Try Again!')
+        screen.fill((190,190,190))
+        screen.blit(text_surface, text_rect)
+        for button in diff_buttons:
+            button.show()
+            button.draw(screen)
+        pygame.display.flip()
+    return difficulty
+
 def main(PHRASE):
     clock = pygame.time.Clock()
+    
+    # get user selected difficulty
+    difficulty = get_difficulty()
+    print(f'++> difficulty: {difficulty}')
 
     # make letter spaces
     PHRASE = PHRASE.upper()
@@ -235,6 +291,8 @@ def main(PHRASE):
     input1 = ''
     done = False
     while not done:
+        if difficulty == -1:
+            done = True
         mouse_pos = pygame.mouse.get_pos()
         for button in letter_buttons:
             if button.rect.collidepoint(mouse_pos):
@@ -253,7 +311,6 @@ def main(PHRASE):
                 e_key = event.key
                 if e_key in range(pygame.K_a, pygame.K_z + 1):
                     input1 = event.unicode.upper()
-
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for button in letter_buttons:
                     if button.rect.collidepoint(mouse_pos):
@@ -308,7 +365,6 @@ if __name__ == '__main__':
         pregame.show_list(screen, word_list)
         new_list_button = pregame.show_button(screen)
         pygame.display.flip()
-        
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
