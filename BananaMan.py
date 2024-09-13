@@ -7,8 +7,10 @@ import word
 
 pygame.init()
 SCREEN_SIZE = (1080, 606)
-BACKGROUND_COLOR = (0,0,200)
+BACKGROUND_COLOR = (198,208,149)
 BACKGROUND_IMAGE = 'Images/Banana_yellow_background_474x266.png'
+G_O_BACKGROUND = 'Images/gameover.jpg'
+USED_IMAGE = 'Images/used_clear.png'
 COLOR_HIDDEN = (0,0,0)
 COLOR_SHOWN = (0,255,255)
 FONT = pygame.font.Font(None, 64)
@@ -96,6 +98,7 @@ class StatBox:
         self.remaining = length
         self.correct = 0
         self.errors = 0
+        self.limit = 100
         self.color = (150,150,150)
         self.rect = pygame.Rect(x, y, w, h)
         self.text_color = (0,0,0)
@@ -130,7 +133,6 @@ def winner_banner(letter_spaces):
     timer = 1000
     bg_banner = 'Images/Winner_banner_1080x675.png'
     bg_image = pygame.image.load(bg_banner)
-
     while timer > 0:
         timer -=1
         screen.blit(bg_image, (0,0))
@@ -148,8 +150,43 @@ def winner_banner(letter_spaces):
                 timer = 0
         pygame.display.flip()
 
-# see if input is letterin phrase
+def game_over(letter_spaces):
+    timer = 1000
+    bg_image = pygame.image.load(G_O_BACKGROUND)
+    bg_image = pygame.transform.scale(bg_image, SCREEN_SIZE)
+    while timer >= 0:
+        timer -= 1
+        screen.blit(bg_image, (0, 0))
+        for letter in letter_spaces:
+            letter.show()
+            letter.draw(screen)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                timer = 0
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                timer = 0
+            if event.type == pygame.KEYDOWN:
+                timer = 0
+        pygame.display.flip()
+
+def usedscreen(screen):
+    used_image = pygame.image.load(USED_IMAGE)
+    used_image = pygame.transform.scale(used_image, (303, 303))
+    used_rect = used_image.get_rect()
+    used_rect.center = (screen_width/2, screen_height/2)
+    screen.blit(used_image, used_rect)
+    pygame.display.flip()
+
+def used(screen):
+    timer = 100
+    while timer > 0:
+        usedscreen(screen)
+        timer -= 1
+
+# see if input is letter in phrase
 def guess(guess_count, input, letter_spaces):
+    print(f'=====> guessing: {input}')
+    
     done = False
     guess_count.count += 1
     guess = submitInput(input, letter_spaces)
@@ -160,6 +197,10 @@ def guess(guess_count, input, letter_spaces):
     guess_count.remaining = guess[1]
     if guess_count.remaining <= 0:
         winner_banner(letter_spaces)
+        done = True
+    if guess_count.limit <= guess_count.errors:
+        game_over(letter_spaces)
+        print(f'GAME OVER!')
         done = True
     return done
 
@@ -270,7 +311,7 @@ def get_difficulty():
 
 def main(PHRASE):
     clock = pygame.time.Clock()
-    
+
     # get user selected difficulty
     difficulty = get_difficulty()
     print(f'++> difficulty: {difficulty}')
@@ -287,7 +328,16 @@ def main(PHRASE):
     # make stat box area
     guess_count = StatBox((screen_width-(screen_width/4)), (screen_height-160), (screen_width/4), 160, phrase_length)
 
+    # make difficulty do something - failing goes to Game Over screen
+    if difficulty == '3) HARD':
+        guess_count.limit = 3
+    elif difficulty == '2) MEDIUM':
+        guess_count.limit = 5
+    elif difficulty == '1) EASY':
+        guess_count.limit = 10
+
     # start playing
+    used_letters = []
     input1 = ''
     done = False
     while not done:
@@ -313,17 +363,22 @@ def main(PHRASE):
                     input1 = event.unicode.upper()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for button in letter_buttons:
-                    if button.rect.collidepoint(mouse_pos):
+                    if button.rect.collidepoint(mouse_pos) and button not in used_letters:
                         button.hide()
+                        used_letters.append(button)
                         done = guess(guess_count, button.text, letter_spaces)     
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN and input1 != '':
                 for button in letter_buttons:
-                    if button.text == input1:
+                    if button in used_letters:
+                        print(f'already_used!')
+                        used(screen)
+                    if button.text == input1 and button not in used_letters:
                         button.hide()
+                        used_letters.append(button)
                         done = guess(guess_count, input1, letter_spaces)
 
         input_letter = FONT.render(input1, True, INPUT_COLOR)
-            
+    
 
     # start the displaying   
         # fill background color
@@ -351,7 +406,6 @@ if __name__ == '__main__':
     pygame.display.set_caption("BananaMan!")
 
     word_list = word.get_words()
-    # print(f'===> word_list: {word_list}')
 
     pygame.display.flip()
 
