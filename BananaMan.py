@@ -103,7 +103,7 @@ class StatBox:
         self.rect = pygame.Rect(x, y, w, h)
         self.text_color = (0,0,0)
     def update(self):
-        self.count_text = smallFONT.render(f'Total Guesses: {self.count}', True, self.text_color)
+        self.count_text = smallFONT.render(f'Guesses Remaining: {self.limit - self.errors}', True, self.text_color)
         self.correct_text = smallFONT.render(f'{self.correct} correct', True, self.text_color)
         self.error_text = smallFONT.render(f'{self.errors} errors', True, self.text_color)
         self.remain_text = smallFONT.render(f'{self.remaining} remaining', True, self.text_color)
@@ -185,8 +185,6 @@ def used(screen):
 
 # see if input is letter in phrase
 def guess(guess_count, input, letter_spaces):
-    print(f'=====> guessing: {input}')
-    
     done = False
     guess_count.count += 1
     guess = submitInput(input, letter_spaces)
@@ -361,21 +359,25 @@ def main(PHRASE):
                 e_key = event.key
                 if e_key in range(pygame.K_a, pygame.K_z + 1):
                     input1 = event.unicode.upper()
+                if e_key == pygame.K_RETURN and input1 != '':
+                    if input1 in used_letters:
+                        print(f'return key used, input1: {input1}')
+                        print(f'used_letters: {letter in used_letters}')
+                        used(screen)
+                    else:
+                        for button in letter_buttons:
+                            if button.text == input1:
+                                button.hide()
+                                used_letters.append(input1)
+                                done = guess(guess_count, input1, letter_spaces)
+                                break
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for button in letter_buttons:
-                    if button.rect.collidepoint(mouse_pos) and button not in used_letters:
+                    if button.rect.collidepoint(mouse_pos) and input1 not in used_letters:
                         button.hide()
-                        used_letters.append(button)
-                        done = guess(guess_count, button.text, letter_spaces)     
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN and input1 != '':
-                for button in letter_buttons:
-                    if button in used_letters:
-                        print(f'already_used!')
-                        used(screen)
-                    if button.text == input1 and button not in used_letters:
-                        button.hide()
-                        used_letters.append(button)
+                        used_letters.append(input1)
                         done = guess(guess_count, input1, letter_spaces)
+                        break    
 
         input_letter = FONT.render(input1, True, INPUT_COLOR)
     
