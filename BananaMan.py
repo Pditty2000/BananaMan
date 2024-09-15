@@ -316,7 +316,7 @@ def main(PHRASE):
 
     # make letter spaces
     PHRASE = PHRASE.upper()
-    phrase_surface = pygame.font.Font(None, 64).render(PHRASE, True, (0,0,0))
+    # phrase_surface = pygame.font.Font(None, 64).render(PHRASE, True, (0,0,0))
     phrase_length = len(PHRASE)
     letter_spaces = get_letter_spaces(PHRASE)
 
@@ -325,8 +325,6 @@ def main(PHRASE):
 
     # make stat box area
     guess_count = StatBox((screen_width-(screen_width/4)), (screen_height-160), (screen_width/4), 160, phrase_length)
-
-    # make difficulty do something - failing goes to Game Over screen
     if difficulty == '3) HARD':
         guess_count.limit = 3
     elif difficulty == '2) MEDIUM':
@@ -361,8 +359,6 @@ def main(PHRASE):
                     input1 = event.unicode.upper()
                 if e_key == pygame.K_RETURN and input1 != '':
                     if input1 in used_letters:
-                        print(f'return key used, input1: {input1}')
-                        print(f'used_letters: {letter in used_letters}')
                         used(screen)
                     else:
                         for button in letter_buttons:
@@ -378,39 +374,30 @@ def main(PHRASE):
                         used_letters.append(input1)
                         done = guess(guess_count, input1, letter_spaces)
                         break    
-
         input_letter = FONT.render(input1, True, INPUT_COLOR)
-    
 
-    # start the displaying   
+    # start the displaying if not done
+        if not done:
         # fill background color
-        screen.fill(BACKGROUND_COLOR)
-
+            screen.fill(BACKGROUND_COLOR)
         # show input letter (last key typed) and submitted letter
-        screen.blit(input_letter, (screen_width/2, 207))
-
+            screen.blit(input_letter, (screen_width/2, 207))
         # show guess count totals
-        guess_count.update()
-        guess_count.draw(screen)
-
+            guess_count.update()
+            guess_count.draw(screen)
         # draw the answer letter boxes
-        for letter in letter_spaces:
-            letter.draw(screen)
-        
+            for letter in letter_spaces:
+                letter.draw(screen)
         # draw the alphabet
-        for button in letter_buttons:
-            button.draw(screen)
-
-        pygame.display.flip()
+            for button in letter_buttons:
+                button.draw(screen)
+            pygame.display.flip()
         clock.tick(30)
 
 if __name__ == '__main__':
     pygame.display.set_caption("BananaMan!")
-
     word_list = word.get_words()
-
-    pygame.display.flip()
-
+    # pygame.display.flip()
     the_count =  0
     running = True
     while running:   
